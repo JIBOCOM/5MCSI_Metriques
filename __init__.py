@@ -36,7 +36,9 @@ def histogramme():
 
 @app.route("/commits-data/")
 def commits_data():
-    url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
+    
+    url = "https://api.github.com/repos/JIBOCOM/5MCSI_Metriques/commits?per_page=100"
+
     try:
         with urlopen(url) as response:
             data = response.read()
@@ -56,7 +58,6 @@ def commits_data():
                 continue
 
     return jsonify({"minutes": minutes_list})
-
 
 @app.route("/commits/")
 def commits_page():
