@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Métrique - Histogramme</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+
+  <body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+    <script>
+      google.charts.load("current", { packages: ["corechart"] });
+      google.charts.setOnLoadCallback(loadData);
+
+      function loadData() {
+        // Fetch the API /tawarano/
+        fetch('/tawarano/')
+          .then(response => response.json())
+          .then(data => {
+            drawHistogram(data);
+          });
+      }
+
+      function drawHistogram(data) {
+        // Prepare a DataTable for the histogram (only numbers)
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('number', 'Température');
+
+        data.results.forEach(entry => {
+          dataTable.addRow([entry.temp]);
+        });
+
+        // Options
+        var options = {
+          title: 'Distribution des températures – Ville de Tawarano',
+          legend: { position: 'none' },
+          colors: ['#4285f4'],  // Google default color
+          histogram: { bucketSize: 2 } // groups of 2 degrees (optional)
+        };
+
+        // Draw histogram
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
+        chart.draw(dataTable, options);
+      }
+    </script>
+  </body>
+</html>
