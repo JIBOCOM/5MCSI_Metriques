@@ -53,6 +53,13 @@ def commits_data():
 
     return jsonify({"minutes": minutes_list})
 
+@app.route("/test-requests")
+def test_requests():
+    try:
+        import requests
+        return "requests is installed"
+    except:
+        return "requests is NOT installed"
 @app.route("/commits/")
 def commits_page():
     return render_template("commits.html")
