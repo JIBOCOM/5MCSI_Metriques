@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Commits - Minutes</title>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(loadData);
+
+        function loadData() {
+            fetch('/commits-data/')
+                .then(response => response.json())
+                .then(data => drawChart(data.minutes));
+        }
+
+        function drawChart(minutesArray) {
+            // Construction d’un tableau Google Charts
+            var data = new google.visualization.DataTable();
+            data.addColumn('number', 'Minute');
+            data.addColumn('number', 'Commits');
+
+            let counts = {};
+            minutesArray.forEach(min => {
+                counts[min] = (counts[min] || 0) + 1;
+            });
+
+            for (const minute in counts) {
+                data.addRow([parseInt(minute), counts[minute]]);
+            }
+
+            var options = {
+                title: 'Commits par minute',
+                hAxis: { title: 'Minute' },
+                vAxis: { title: 'Nombre de commits' },
+                legend: 'none'
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+
+<body>
+    <h2 style="text-align:center;">Commits (minute par minute)</h2>
+    <div id="chart_div" style="width: 900px; height: 500px; margin: auto;"></div>
+</body>
+</html>
