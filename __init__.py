@@ -36,20 +36,24 @@ def histogramme():
 
 @app.route("/commits-data/")
 def commits_data():
-    # URL de l'API GitHub
     url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
+    try:
+        with urlopen(url) as response:
+            data = response.read()
+            commits = json.loads(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    # Récupérer les commits
-    response = requests.get(url)
-    commits = response.json()
-
-    # On extrait les minutes dans chaque commit
     minutes_list = []
 
     for commit in commits:
-        date_str = commit["commit"]["author"]["date"]  # ex: "2024-02-11T11:57:27Z"
-        date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
-        minutes_list.append(date_obj.minute)
+        date_str = commit.get("commit", {}).get("author", {}).get("date")
+        if date_str:
+            try:
+                date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+                minutes_list.append(date_obj.minute)
+            except ValueError:
+                continue
 
     return jsonify({"minutes": minutes_list})
 
